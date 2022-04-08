@@ -10,8 +10,14 @@ require("lspconfig").clangd.setup {
   end,
   on_attach = function(client, bufnr)
     ...
-    -- NOTE: This currently only sets vim.bo.shiftwidth based on IndentWidth from clang-format
     require("clang-format").on_attach(client, bufnr)
   end,
 }
+```
+
+This will set the following options:
+
+```
+vim.bo.shiftwidth =: IndentWidth
+vim.bo.textwidth  =: ColumnLimit
 ```

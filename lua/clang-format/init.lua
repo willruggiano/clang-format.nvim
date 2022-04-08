@@ -25,7 +25,10 @@ M.setup = function(opts)
 end
 
 M.on_attach = function(...)
-  vim.bo.shiftwidth = config.IndentWidth
+  if config then
+    vim.bo.shiftwidth = config.IndentWidth
+    vim.bo.textwidth = config.ColumnLimit
+  end
 end
 
 return M
