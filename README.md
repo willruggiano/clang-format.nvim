@@ -6,7 +6,11 @@
 require("lspconfig").clangd.setup {
   on_init = function(client)
     ...
-    require("clang-format").setup {}
+    require("clang-format").setup(function(config, ...)
+        -- Set buffer options here.
+        -- "config" is the parsed output of clang-format -dump
+        -- "..." are any additional arguments passed to on_attach (see below, typically client and bufnr).
+    end)
   end,
   on_attach = function(client, bufnr)
     ...

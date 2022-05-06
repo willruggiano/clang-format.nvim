@@ -8,8 +8,13 @@ end
 local M = {}
 
 local config = false
+local on_attach = false
 
-M.setup = function(opts)
+M.setup = function(f_on_attach)
+  vim.validate {
+    func = { f_on_attach, "function", "setup() accepts a single, required argument which must be a function" },
+  }
+
   if vim.fn.executable "clang-format" ~= 1 then
     print "could not find clang-format executable"
     return
@@ -22,12 +27,12 @@ M.setup = function(opts)
   end
 
   config = lyaml.load(get_clang_format_config())
+  on_attach = f_on_attach
 end
 
 M.on_attach = function(...)
   if config then
-    vim.bo.shiftwidth = config.IndentWidth
-    vim.bo.textwidth = config.ColumnLimit
+    on_attach(config, ...)
   end
 end
 
