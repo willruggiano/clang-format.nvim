@@ -1,21 +1,28 @@
-local function get_clang_format_config()
-  local f = io.popen("clang-format --dump-config", "r")
-  local s = f:read "*a"
-  f:close()
-  return s
+local function get_clang_format_config(exe)
+  local f = io.popen(exe .. " --dump-config", "r")
+  if f ~= nil then
+    local s = f:read "*a"
+    f:close()
+    return s
+  end
+  error "[clang-format.nvim] failed to execute clang-format --dump-config"
 end
 
 local M = {}
 
-local config = false
+local clang_format_config = false
 local on_attach = false
 
-M.setup = function(f_on_attach)
+M.setup = function(config)
   vim.validate {
-    func = { f_on_attach, "function", "setup() accepts a single, required argument which must be a function" },
+    config = { config, "table" },
   }
 
-  if vim.fn.executable "clang-format" ~= 1 then
+  local user_on_attach = config.on_attach
+    or error "[clang-format.nvim] setup(config): config must have an on_attach function"
+  local exe = config.exe or "clang-format"
+
+  if vim.fn.executable(exe) ~= 1 then
     print "could not find clang-format executable"
     return
   end
@@ -26,13 +33,13 @@ M.setup = function(f_on_attach)
     return
   end
 
-  config = lyaml.load(get_clang_format_config())
-  on_attach = f_on_attach
+  clang_format_config = lyaml.load(get_clang_format_config(exe))
+  on_attach = user_on_attach
 end
 
 M.on_attach = function(...)
-  if config then
-    on_attach(config, ...)
+  if clang_format_config and on_attach then
+    on_attach(clang_format_config, ...)
   end
 end
 
