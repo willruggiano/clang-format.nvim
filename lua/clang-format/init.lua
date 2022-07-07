@@ -28,6 +28,7 @@ M.setup = function(config)
   end
 
   local ok, lyaml = pcall(require, "lyaml")
+  ok, lyaml = pcall(require, "yaml") -- My .so is yaml.so?
   if not ok then
     print "you must install lyaml via luarocks"
     return
